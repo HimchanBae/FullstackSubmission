@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 
 const PORT = 3001;
+
 app.use(express.json());
 
 let phoneBook = [
@@ -91,6 +92,12 @@ app.get("/info", (request, response) => {
     `<p>Phonebook has info for ${entryCount} people</p><p>${currentTime}</p>`
   );
 });
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndpoint);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

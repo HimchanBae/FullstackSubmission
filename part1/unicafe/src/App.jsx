@@ -17,16 +17,6 @@ const StatisticLine = (props) => {
   );
 };
 
-const AnecdoteLine = (props) => {
-  return (
-    <div>
-      {props.text}
-      <br />
-      has {props.value} votes
-    </div>
-  );
-};
-
 const Statistics = (props) => {
   const totalFeedback =
     props.statistics.good + props.statistics.neutral + props.statistics.bad;
@@ -79,12 +69,25 @@ const App = () => {
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
   const [selected, setSelected] = useState(0);
-  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
+  const [mostVotes, setMostVotes] = useState(0);
+  // trick to generate a array with zeros that has the size of anecdotes
+  const [votes, setVotes] = useState(anecdotes.map((_) => 0));
 
-  const handleVote = () => {
-    setVotes(
-      votes.map((vote, index) => (index === selected ? vote + 1 : vote))
-    );
+  const pickRandom = () => {
+    while (true) {
+      const possibleNext = Math.floor(Math.random() * anecdotes.length);
+      if (possibleNext !== selected) return possibleNext;
+    }
+  };
+
+  const voteSelected = () => {
+    const newVotes = [...votes];
+    newVotes[selected] += 1;
+    setVotes(newVotes);
+
+    if (newVotes[selected] > votes[mostVotes]) {
+      setMostVotes(selected);
+    }
   };
 
   const maxVotes = Math.max(...votes);
@@ -93,16 +96,16 @@ const App = () => {
   return (
     <div>
       <Header value={anecdoteHeader} />
-      <AnecdoteLine text={anecdotes[selected]} value={votes[selected]} />
-      <br />
-      <Button handleClick={handleVote} text="vote" />
-      <Button
-        handleClick={() => setSelected(Math.floor(Math.random() * 8))}
-        text="next anecdote"
-      />
+      <div>{anecdotes[selected]}</div>
+      <div>has {votes[selected]} votes</div>
+      <div>
+        <button onClick={voteSelected}>vote</button>
+        <button onClick={() => setSelected(pickRandom())}>next anecdote</button>
+      </div>
       <Button handleClick={() => setSelected(0)} text="reset anectdote" />
       <Header value={anecdoteKingHeader} />
-      <AnecdoteLine text={anecdotes[maxVotesIndex]} value={maxVotes} />
+      <div>{anecdotes[mostVotes]}</div>
+      <div>has {votes[mostVotes]} votes</div>
       <Header value={feedbackHeader} />
       <Button handleClick={() => setGood(good + 1)} text="good" />
       <Button handleClick={() => setNeutral(neutral + 1)} text="neutral" />

@@ -5,11 +5,7 @@ const Header = (props) => {
 };
 
 const Button = (props) => {
-  return (
-    <>
-      <button onClick={props.handleClick}>{props.text}</button>
-    </>
-  );
+  return <button onClick={props.handleClick}>{props.text}</button>;
 };
 
 const StatisticLine = (props) => {
@@ -62,15 +58,6 @@ const Statistics = (props) => {
   );
 };
 
-const Display = (props) => {
-  return (
-    <div>
-      <Header value={props.header} />
-      {props.statistics && <Statistics statistics={props.statistics} />}
-    </div>
-  );
-};
-
 const App = () => {
   const feedbackHeader = "give feedback";
   const statisticsHeader = "statistics";
@@ -95,9 +82,9 @@ const App = () => {
   const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
 
   const handleVote = () => {
-    const newVotes = [...votes];
-    newVotes[selected] += 1;
-    setVotes(newVotes);
+    setVotes(
+      votes.map((vote, index) => (index === selected ? vote + 1 : vote))
+    );
   };
 
   const maxVotes = Math.max(...votes);
@@ -105,7 +92,7 @@ const App = () => {
 
   return (
     <div>
-      <Display header={anecdoteHeader} />
+      <Header value={anecdoteHeader} />
       <AnecdoteLine text={anecdotes[selected]} value={votes[selected]} />
       <br />
       <Button handleClick={handleVote} text="vote" />
@@ -114,13 +101,14 @@ const App = () => {
         text="next anecdote"
       />
       <Button handleClick={() => setSelected(0)} text="reset anectdote" />
-      <Display header={anecdoteKingHeader} />
+      <Header value={anecdoteKingHeader} />
       <AnecdoteLine text={anecdotes[maxVotesIndex]} value={maxVotes} />
-      <Display header={feedbackHeader} />
+      <Header value={feedbackHeader} />
       <Button handleClick={() => setGood(good + 1)} text="good" />
       <Button handleClick={() => setNeutral(neutral + 1)} text="neutral" />
       <Button handleClick={() => setBad(bad + 1)} text="bad" />
-      <Display header={statisticsHeader} statistics={{ good, neutral, bad }} />
+      <Header value={statisticsHeader} />{" "}
+      <Statistics statistics={{ good, neutral, bad }} />
     </div>
   );
 };

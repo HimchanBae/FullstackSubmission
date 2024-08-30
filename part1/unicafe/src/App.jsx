@@ -1,12 +1,10 @@
 import { useState } from "react";
 
 const Header = (props) => {
-  console.log(props);
   return <h1>{props.value}</h1>;
 };
 
 const Button = (props) => {
-  console.log(props);
   return (
     <>
       <button onClick={props.handleClick}>{props.text}</button>
@@ -65,7 +63,6 @@ const Statistics = (props) => {
 };
 
 const Display = (props) => {
-  console.log(props);
   return (
     <div>
       <Header value={props.header} />
@@ -77,6 +74,8 @@ const Display = (props) => {
 const App = () => {
   const feedbackHeader = "give feedback";
   const statisticsHeader = "statistics";
+  const anecdoteHeader = "Anecdote of the Day";
+  const anecdoteKingHeader = "Anecdote with the most votes";
   const anecdotes = [
     "If it hurts, do it more often.",
     "Adding manpower to a late software project makes it later!",
@@ -101,8 +100,12 @@ const App = () => {
     setVotes(newVotes);
   };
 
+  const maxVotes = Math.max(...votes);
+  const maxVotesIndex = votes.indexOf(maxVotes);
+
   return (
     <div>
+      <Display header={anecdoteHeader} />
       <AnecdoteLine text={anecdotes[selected]} value={votes[selected]} />
       <br />
       <Button handleClick={handleVote} text="vote" />
@@ -111,6 +114,8 @@ const App = () => {
         text="next anecdote"
       />
       <Button handleClick={() => setSelected(0)} text="reset anectdote" />
+      <Display header={anecdoteKingHeader} />
+      <AnecdoteLine text={anecdotes[maxVotesIndex]} value={maxVotes} />
       <Display header={feedbackHeader} />
       <Button handleClick={() => setGood(good + 1)} text="good" />
       <Button handleClick={() => setNeutral(neutral + 1)} text="neutral" />

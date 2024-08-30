@@ -23,6 +23,16 @@ const StatisticLine = (props) => {
   );
 };
 
+const AnecdoteLine = (props) => {
+  return (
+    <div>
+      {props.text}
+      <br />
+      has {props.value} votes
+    </div>
+  );
+};
+
 const Statistics = (props) => {
   const totalFeedback =
     props.statistics.good + props.statistics.neutral + props.statistics.bad;
@@ -83,11 +93,19 @@ const App = () => {
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
   const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
+
+  const handleVote = () => {
+    const newVotes = [...votes];
+    newVotes[selected] += 1;
+    setVotes(newVotes);
+  };
 
   return (
     <div>
-      {anecdotes[selected]}
+      <AnecdoteLine text={anecdotes[selected]} value={votes[selected]} />
       <br />
+      <Button handleClick={handleVote} text="vote" />
       <Button
         handleClick={() => setSelected(Math.floor(Math.random() * 8))}
         text="next anecdote"

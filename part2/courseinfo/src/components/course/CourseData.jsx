@@ -43,6 +43,4 @@ const Course = [
   },
 ];
 
-console.log(Course);
-
 export default Course;

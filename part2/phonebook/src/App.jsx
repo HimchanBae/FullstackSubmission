@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,10 +11,8 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log("promise fulfilled");
-      setPersons(response.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -26,7 +24,9 @@ const App = () => {
     if (nameExists) {
       alert(`${newName} is already added to phonebook`);
       return;
-    } else if (numberExists) {
+    }
+
+    if (numberExists) {
       alert(`${newNumber} is already added to phonebook`);
       return;
     }
@@ -36,9 +36,17 @@ const App = () => {
       number: newNumber,
     };
 
-    setPersons(persons.concat(newPerson));
-    setNewName("");
-    setNewNumber("");
+    personService
+      .create(newPerson)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      })
+      .catch((error) => {
+        console.error("Error adding person:", error);
+        alert("Failed to add person to the server.");
+      });
   };
 
   const handleNumberChange = (event) => {

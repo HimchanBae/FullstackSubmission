@@ -13,6 +13,7 @@ const App = () => {
   const [notificationMessage, setNotificationMessage] = useState(
     "something will be happened..."
   );
+  const [notificationType, setNotificationType] = useState("");
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
@@ -44,14 +45,19 @@ const App = () => {
             setNotificationMessage(
               `Added ${updatedPerson.name} with number ${updatedPerson.number}`
             );
+            setNotificationType("success");
             setTimeout(() => {
               setNotificationMessage(null);
             }, 5000);
           })
           .catch((error) => {
-            alert(
-              `The person '${existingPerson.name}' was already removed from server`
+            setNotificationMessage(
+              `Information of ${existingPerson.name} has already been removed from server`
             );
+            setNotificationType("error");
+            setTimeout(() => {
+              setNotificationMessage(null);
+            }, 5000);
             setPersons(
               persons.filter((person) => person.id !== existingPerson.id)
             );
@@ -70,13 +76,18 @@ const App = () => {
           setNewName("");
           setNewNumber("");
           setNotificationMessage(`Added ${newPerson.name}`);
+          setNotificationType("success");
           setTimeout(() => {
             setNotificationMessage(null);
           }, 5000);
         })
         .catch((error) => {
           console.error("Error adding person:", error);
-          alert("Failed to add person to the server.");
+          setNotificationMessage("Failed to add person to the server.");
+          setNotificationType("error");
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
         });
     }
   };
@@ -91,13 +102,20 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter((p) => p.id !== id));
           setNotificationMessage(`Deleted ${person.name}`);
+          setNotificationType("success");
           setTimeout(() => {
             setNotificationMessage(null);
           }, 5000);
         })
         .catch((error) => {
-          alert(`The person '${person.name}' was already deleted from server`);
-          setPersons(persons.filter((p) => p.id !== id));
+          console.error("Error deleting person:", error);
+          setNotificationMessage(
+            `The person '${person.name}' was already deleted from server`
+          );
+          setNotificationType("error");
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
         });
     }
   };
@@ -121,7 +139,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notificationMessage}></Notification>
+      <Notification
+        message={notificationMessage}
+        type={notificationType}
+      ></Notification>
       <Filter value={filter} onChange={handleFilterChange} />
       <h3>Add a new</h3>
       <PersonForm

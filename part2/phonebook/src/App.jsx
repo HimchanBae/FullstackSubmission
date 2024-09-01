@@ -18,35 +18,53 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    const nameExists = persons.some((person) => person.name === newName);
-    const numberExists = persons.some((person) => person.number === newNumber);
+    const existingPerson = persons.find((person) => person.name === newName);
 
-    if (nameExists) {
-      alert(`${newName} is already added to phonebook`);
-      return;
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+      if (confirmUpdate) {
+        const updatedPerson = { ...existingPerson, number: newNumber };
+
+        personService
+          .update(existingPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== existingPerson.id ? person : returnedPerson
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          })
+          .catch((error) => {
+            alert(
+              `The person '${existingPerson.name}' was already removed from server`
+            );
+            setPersons(
+              persons.filter((person) => person.id !== existingPerson.id)
+            );
+          });
+      }
+    } else {
+      const newPerson = {
+        name: newName,
+        number: newNumber,
+      };
+
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          console.error("Error adding person:", error);
+          alert("Failed to add person to the server.");
+        });
     }
-
-    if (numberExists) {
-      alert(`${newNumber} is already added to phonebook`);
-      return;
-    }
-
-    const newPerson = {
-      name: newName,
-      number: newNumber,
-    };
-
-    personService
-      .create(newPerson)
-      .then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setNewNumber("");
-      })
-      .catch((error) => {
-        console.error("Error adding person:", error);
-        alert("Failed to add person to the server.");
-      });
   };
 
   const deletePerson = (id) => {

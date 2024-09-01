@@ -49,6 +49,23 @@ const App = () => {
       });
   };
 
+  const deletePerson = (id) => {
+    const person = persons.find((p) => p.id === id);
+    const confirmDelete = window.confirm(`Delete ${person.name}?`);
+
+    if (confirmDelete) {
+      personService
+        .eliminate(id)
+        .then(() => {
+          setPersons(persons.filter((p) => p.id !== id));
+        })
+        .catch((error) => {
+          alert(`The person '${person.name}' was already deleted from server`);
+          setPersons(persons.filter((p) => p.id !== id));
+        });
+    }
+  };
+
   const handleNumberChange = (event) => {
     setNewNumber(event.target.value);
   };
@@ -78,7 +95,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} deletePerson={deletePerson} />
     </div>
   );
 };

@@ -23,7 +23,7 @@
     {
       "id": "aba6",
       "content": "new post",
-      "important": false
+      "important": true
     }
   ]
 }

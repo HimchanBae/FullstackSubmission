@@ -17,7 +17,6 @@ const App = () => {
       setPersons(response.data);
     });
   }, []);
-  console.log("render", persons.length, "notes");
 
   const addPerson = (event) => {
     event.preventDefault();
